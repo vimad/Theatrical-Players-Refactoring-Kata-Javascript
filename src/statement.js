@@ -4,7 +4,7 @@ function statement (invoice, plays) {
     return renderPlainText(statementData, invoice, plays);
 }
 
-function renderPlainText(statementData, invoice, plays) {
+function renderPlainText(data, invoice, plays) {
     let result = `Statement for ${invoice.customer}\n`;
     for (let perf of invoice.performances) {
         result += ` ${getPlay(perf).name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
