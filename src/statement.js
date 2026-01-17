@@ -19,7 +19,7 @@ function statement (invoice, plays) {
 function renderPlainText(data, plays) {
     let result = `Statement for ${data.customer}\n`;
     for (let perf of data.performances) {
-        result += ` ${getPlay(perf).name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
+        result += ` ${perf.play.name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
     }
     result += `Amount owed is ${format(totalAmount() / 100)}\n`;
     result += `You earned ${(totalVolumeCredits())} credits\n`;
@@ -33,13 +33,9 @@ function renderPlainText(data, plays) {
             }).format(number);
     }
 
-    function getPlay(perf) {
-        return plays[perf.playID];
-    }
-
     function amountForPlay(perf) {
         let thisAmount = 0;
-        switch (getPlay(perf).type) {
+        switch (perf.play.type) {
             case "tragedy":
                 thisAmount = 40000;
                 if (perf.audience > 30) {
@@ -54,14 +50,14 @@ function renderPlainText(data, plays) {
                 thisAmount += 300 * perf.audience;
                 break;
             default:
-                throw new Error(`unknown type: ${getPlay(perf).type}`);
+                throw new Error(`unknown type: ${perf.play.type}`);
         }
         return thisAmount;
     }
 
     function volumeCreditForPerf(perf) {
         let volumeCredits = Math.max(perf.audience - 30, 0);
-        if ("comedy" === getPlay(perf).type) volumeCredits += Math.floor(perf.audience / 5);
+        if ("comedy" === perf.play.type) volumeCredits += Math.floor(perf.audience / 5);
         return volumeCredits;
     }
 
