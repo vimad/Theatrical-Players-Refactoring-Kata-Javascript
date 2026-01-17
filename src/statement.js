@@ -2,12 +2,13 @@
 function statement (invoice, plays) {
     const statementData = {}
     statementData.customer = invoice.customer;
+    statementData.performances = invoice.performances;
     return renderPlainText(statementData, invoice, plays);
 }
 
 function renderPlainText(data, invoice, plays) {
     let result = `Statement for ${data.customer}\n`;
-    for (let perf of invoice.performances) {
+    for (let perf of data.performances) {
         result += ` ${getPlay(perf).name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
     }
     result += `Amount owed is ${format(totalAmount() / 100)}\n`;
@@ -60,7 +61,7 @@ function renderPlainText(data, invoice, plays) {
 
     function totalVolumeCredits() {
         let volumeCredits = 0;
-        for (let perf of invoice.performances) {
+        for (let perf of data.performances) {
             volumeCredits += volumeCreditForPerf(perf);
         }
         return volumeCredits;
@@ -68,7 +69,7 @@ function renderPlainText(data, invoice, plays) {
 
     function totalAmount() {
         let totalAmount = 0;
-        for (let perf of invoice.performances) {
+        for (let perf of data.performances) {
             totalAmount += amountForPlay(perf);
         }
         return totalAmount;
