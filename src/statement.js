@@ -8,11 +8,34 @@ function statement (invoice, plays) {
     function enrichPerformance(performance) {
         const result = Object.assign({}, performance);
         result.play = playFor(performance);
+        result.amount = amountFor(result);
         return result;
     }
 
     function playFor(perf) {
         return plays[perf.playID];
+    }
+
+    function amountFor(perf) {
+        let thisAmount = 0;
+        switch (perf.play.type) {
+            case "tragedy":
+                thisAmount = 40000;
+                if (perf.audience > 30) {
+                    thisAmount += 1000 * (perf.audience - 30);
+                }
+                break;
+            case "comedy":
+                thisAmount = 30000;
+                if (perf.audience > 20) {
+                    thisAmount += 10000 + 500 * (perf.audience - 20);
+                }
+                thisAmount += 300 * perf.audience;
+                break;
+            default:
+                throw new Error(`unknown type: ${perf.play.type}`);
+        }
+        return thisAmount;
     }
 }
 
