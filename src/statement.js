@@ -2,8 +2,18 @@
 function statement (invoice, plays) {
     const statementData = {}
     statementData.customer = invoice.customer;
-    statementData.performances = invoice.performances;
+    statementData.performances = invoice.performances.map(enrichPerformance);
     return renderPlainText(statementData, plays);
+
+    function enrichPerformance(performance) {
+        const result = Object.assign({}, performance);
+        result.play = getPlay(performance);
+        return result;
+    }
+
+    function getPlay(perf) {
+        return plays[perf.playID];
+    }
 }
 
 function renderPlainText(data, plays) {
