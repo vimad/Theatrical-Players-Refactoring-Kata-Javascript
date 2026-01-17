@@ -3,14 +3,12 @@ function statement (invoice, plays) {
     let totalAmount = 0;
     let result = `Statement for ${invoice.customer}\n`;
 
-    let volumeCredits = totalVolumeCredits();
-
     for (let perf of invoice.performances) {
         result += ` ${getPlay(perf).name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
         totalAmount += amountForPlay(perf);
     }
     result += `Amount owed is ${format(totalAmount/100)}\n`;
-    result += `You earned ${volumeCredits} credits\n`;
+    result += `You earned ${(totalVolumeCredits())} credits\n`;
     return result;
 
     function format(number){
