@@ -1,11 +1,11 @@
 
 function statement (invoice, plays) {
     let totalAmount = 0;
-    let volumeCredits = 0;
     let result = `Statement for ${invoice.customer}\n`;
 
+    let volumeCredits = totalVolumeCredits();
+
     for (let perf of invoice.performances) {
-        volumeCredits += volumeCreditForPerf(perf);
         result += ` ${getPlay(perf).name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
         totalAmount += amountForPlay(perf);
     }
@@ -53,6 +53,14 @@ function statement (invoice, plays) {
 
     function usd(number) {
         return format(number / 100);
+    }
+
+    function totalVolumeCredits() {
+        let volumeCredits = 0;
+        for (let perf of invoice.performances) {
+            volumeCredits += volumeCreditForPerf(perf);
+        }
+        return volumeCredits;
     }
 }
 
