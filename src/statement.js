@@ -7,11 +7,11 @@ function statement (invoice, plays) {
 
     function enrichPerformance(performance) {
         const result = Object.assign({}, performance);
-        result.play = getPlay(performance);
+        result.play = playFor(performance);
         return result;
     }
 
-    function getPlay(perf) {
+    function playFor(perf) {
         return plays[perf.playID];
     }
 }
@@ -19,7 +19,7 @@ function statement (invoice, plays) {
 function renderPlainText(data) {
     let result = `Statement for ${data.customer}\n`;
     for (let perf of data.performances) {
-        result += ` ${perf.play.name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
+        result += ` ${perf.play.name}: ${(usd(amountFor(perf)))} (${perf.audience} seats)\n`;
     }
     result += `Amount owed is ${format(totalAmount() / 100)}\n`;
     result += `You earned ${(totalVolumeCredits())} credits\n`;
@@ -33,7 +33,7 @@ function renderPlainText(data) {
             }).format(number);
     }
 
-    function amountForPlay(perf) {
+    function amountFor(perf) {
         let thisAmount = 0;
         switch (perf.play.type) {
             case "tragedy":
@@ -55,7 +55,7 @@ function renderPlainText(data) {
         return thisAmount;
     }
 
-    function volumeCreditForPerf(perf) {
+    function volumeCreditFor(perf) {
         let volumeCredits = Math.max(perf.audience - 30, 0);
         if ("comedy" === perf.play.type) volumeCredits += Math.floor(perf.audience / 5);
         return volumeCredits;
@@ -68,7 +68,7 @@ function renderPlainText(data) {
     function totalVolumeCredits() {
         let volumeCredits = 0;
         for (let perf of data.performances) {
-            volumeCredits += volumeCreditForPerf(perf);
+            volumeCredits += volumeCreditFor(perf);
         }
         return volumeCredits;
     }
@@ -76,7 +76,7 @@ function renderPlainText(data) {
     function totalAmount() {
         let totalAmount = 0;
         for (let perf of data.performances) {
-            totalAmount += amountForPlay(perf);
+            totalAmount += amountFor(perf);
         }
         return totalAmount;
     }
