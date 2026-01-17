@@ -1,17 +1,23 @@
 
 function statement (invoice, plays) {
+    return renderPlainText(invoice, plays);
+}
+
+function renderPlainText(invoice, plays) {
     let result = `Statement for ${invoice.customer}\n`;
     for (let perf of invoice.performances) {
         result += ` ${getPlay(perf).name}: ${(usd(amountForPlay(perf)))} (${perf.audience} seats)\n`;
     }
-    result += `Amount owed is ${format(totalAmount()/100)}\n`;
+    result += `Amount owed is ${format(totalAmount() / 100)}\n`;
     result += `You earned ${(totalVolumeCredits())} credits\n`;
     return result;
 
-    function format(number){
+    function format(number) {
         return new Intl.NumberFormat("en-US",
-            { style: "currency", currency: "USD",
-                minimumFractionDigits: 2 }).format(number);
+            {
+                style: "currency", currency: "USD",
+                minimumFractionDigits: 2
+            }).format(number);
     }
 
     function getPlay(perf) {
