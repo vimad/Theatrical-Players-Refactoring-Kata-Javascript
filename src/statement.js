@@ -4,25 +4,9 @@ function statement (invoice, plays) {
     let volumeCredits = 0;
     let result = `Statement for ${invoice.customer}\n`;
 
+
     for (let perf of invoice.performances) {
-        let thisAmount = 0;
-        switch (getPlay(perf).type) {
-            case "tragedy":
-                thisAmount = 40000;
-                if (perf.audience > 30) {
-                    thisAmount += 1000 * (perf.audience - 30);
-                }
-                break;
-            case "comedy":
-                thisAmount = 30000;
-                if (perf.audience > 20) {
-                    thisAmount += 10000 + 500 * (perf.audience - 20);
-                }
-                thisAmount += 300 * perf.audience;
-                break;
-            default:
-                throw new Error(`unknown type: ${getPlay(perf).type}`);
-        }
+        let thisAmount = amountForPlay(perf);
         // add volume credits
         volumeCredits += Math.max(perf.audience - 30, 0);
         // add extra credit for every ten comedy attendees
@@ -43,6 +27,28 @@ function statement (invoice, plays) {
 
     function getPlay(perf) {
         return plays[perf.playID];
+    }
+
+    function amountForPlay(perf) {
+        let thisAmount = 0;
+        switch (getPlay(perf).type) {
+            case "tragedy":
+                thisAmount = 40000;
+                if (perf.audience > 30) {
+                    thisAmount += 1000 * (perf.audience - 30);
+                }
+                break;
+            case "comedy":
+                thisAmount = 30000;
+                if (perf.audience > 20) {
+                    thisAmount += 10000 + 500 * (perf.audience - 20);
+                }
+                thisAmount += 300 * perf.audience;
+                break;
+            default:
+                throw new Error(`unknown type: ${getPlay(perf).type}`);
+        }
+        return thisAmount;
     }
 }
 
