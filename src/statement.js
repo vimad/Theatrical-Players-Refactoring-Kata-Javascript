@@ -5,12 +5,14 @@ function statement (invoice, plays) {
     let result = `Statement for ${invoice.customer}\n`;
 
 
-    for (let perf of invoice.performances) {
-        // add volume credits
-        volumeCredits += Math.max(perf.audience - 30, 0);
-        // add extra credit for every ten comedy attendees
+    function volumeCreditForPerf(perf) {
+        let volumeCredits = Math.max(perf.audience - 30, 0);
         if ("comedy" === getPlay(perf).type) volumeCredits += Math.floor(perf.audience / 5);
-        // print line for this order
+        return volumeCredits;
+    }
+
+    for (let perf of invoice.performances) {
+        volumeCredits += volumeCreditForPerf(perf);
         result += ` ${getPlay(perf).name}: ${format(amountForPlay(perf)/100)} (${perf.audience} seats)\n`;
         totalAmount += amountForPlay(perf);
     }
