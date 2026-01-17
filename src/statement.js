@@ -3,12 +3,14 @@ function statement (invoice, plays) {
     const statementData = {}
     statementData.customer = invoice.customer;
     statementData.performances = invoice.performances.map(enrichPerformance);
+    statementData.totalVolumeCredits = totalVolumeCredits(statementData);
     return renderPlainText(statementData);
 
     function enrichPerformance(performance) {
         const result = Object.assign({}, performance);
         result.play = playFor(performance);
         result.amount = amountFor(result);
+        result.volumeCredit = volumeCreditFor(result);
         return result;
     }
 
@@ -37,6 +39,20 @@ function statement (invoice, plays) {
         }
         return thisAmount;
     }
+
+    function volumeCreditFor(perf) {
+        let volumeCredits = Math.max(perf.audience - 30, 0);
+        if ("comedy" === perf.play.type) volumeCredits += Math.floor(perf.audience / 5);
+        return volumeCredits;
+    }
+
+    function totalVolumeCredits(data) {
+        let volumeCredits = 0;
+        for (let perf of data.performances) {
+            volumeCredits += perf.volumeCredit;
+        }
+        return volumeCredits;
+    }
 }
 
 function renderPlainText(data) {
@@ -45,7 +61,7 @@ function renderPlainText(data) {
         result += ` ${perf.play.name}: ${(usd(perf.amount))} (${perf.audience} seats)\n`;
     }
     result += `Amount owed is ${format(totalAmount() / 100)}\n`;
-    result += `You earned ${(totalVolumeCredits())} credits\n`;
+    result += `You earned ${(data.totalVolumeCredits)} credits\n`;
     return result;
 
     function format(number) {
@@ -55,22 +71,10 @@ function renderPlainText(data) {
                 minimumFractionDigits: 2
             }).format(number);
     }
-    function volumeCreditFor(perf) {
-        let volumeCredits = Math.max(perf.audience - 30, 0);
-        if ("comedy" === perf.play.type) volumeCredits += Math.floor(perf.audience / 5);
-        return volumeCredits;
-    }
+
 
     function usd(number) {
         return format(number / 100);
-    }
-
-    function totalVolumeCredits() {
-        let volumeCredits = 0;
-        for (let perf of data.performances) {
-            volumeCredits += volumeCreditFor(perf);
-        }
-        return volumeCredits;
     }
 
     function totalAmount() {
